@@ -44,6 +44,7 @@ FL2KEP=8                                           # This is the number of files
 DIROUT="/backups/current/";                        # This is the directory where we output our backup files.
 BAKUPS="/backups/archive";                         # This is the directory where we package the outputted files.
 
+KEY="/path/to/key"
 
 # Amazon S3 variables
 #
@@ -55,19 +56,19 @@ S3RSYC=false;                                      # To re-sync your entire 'BAK
 # Create our backup files
 #
 echo "1) Exporting GitHub Enterprise backup"
-ssh "admin@"$SERVER "'ghe-export-authorized-keys'" > $DIROUT"authorized-keys.json"
-ssh "admin@"$SERVER "'ghe-export-es-indices'" > $DIROUT"es-indices.tar"
-ssh "admin@"$SERVER "'ghe-export-mysql'" | gzip > $DIROUT"enterprise-mysql-backup.sql.gz"
-ssh "admin@"$SERVER "'ghe-export-redis'" > $DIROUT"backup-redis.rdb"
-ssh "admin@"$SERVER "'ghe-export-repositories'" > $DIROUT"enterprise-repositories-backup.tar"
-ssh "admin@"$SERVER "'ghe-export-settings'" > $DIROUT"settings.json"
-ssh "admin@"$SERVER "'ghe-export-ssh-host-keys'" > $DIROUT"host-keys.tar"
+ssh -i $KEY "admin@"$SERVER "ghe-export-authorized-keys" > $DIROUT"authorized-keys.json"
+ssh -i $KEY "admin@"$SERVER "ghe-export-es-indices" > $DIROUT"es-indices.tar"
+ssh -i $KEY "admin@"$SERVER "ghe-export-mysql" | gzip > $DIROUT"enterprise-mysql-backup.sql.gz"
+ssh -i $KEY "admin@"$SERVER "ghe-export-redis" > $DIROUT"backup-redis.rdb"
+ssh -i $KEY "admin@"$SERVER "ghe-export-repositories" > $DIROUT"enterprise-repositories-backup.tar"
+ssh -i $KEY "admin@"$SERVER "ghe-export-settings" > $DIROUT"settings.json"
+ssh -i $KEY "admin@"$SERVER "ghe-export-ssh-host-keys" > $DIROUT"host-keys.tar"
 
 
 # Package our files by the date
 #
 echo "2) Packaging the files"
-CURRENT_DATE="$(date +%Y.%m.%d)";      # Finds the current date
+CURRENT_DATE="$(date +%Y.%m.%d-%H%M)"; # Finds the current date, added timestamp for more frequent backups
 mkdir -p $BAKUPS                       # Create backup folder if not already there for backup storage
 FILENAME=$GZNAME"-"$CURRENT_DATE.tgz   # Generate our filename
 tar -c $DIROUT | gzip > $FILENAME      # Compress our directory
