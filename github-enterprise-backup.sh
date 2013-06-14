@@ -40,7 +40,7 @@
 #
 SERVER="server.domain.com"                         # This is the name or ip of our server.
 GZNAME="github-enterprise-backup"                  # This is the name appended to the date for our zipped file.
-FL2KEP=8                                           # This is the number of files to keep in the BAKUPS folder.
+FL2KEP=50                                          # This is the number of files to keep in the BAKUPS folder.
 DIROUT="/backups/current/";                        # This is the directory where we output our backup files.
 BAKUPS="/backups/archive";                         # This is the directory where we package the outputted files.
 
